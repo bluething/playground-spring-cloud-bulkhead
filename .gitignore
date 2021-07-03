@@ -201,3 +201,11 @@ gradle-app.setting
 
 resilience4j/features/.gradle
 resilience4j/features/build
+resilience4j/.idea/artifacts
+resilience4j/.idea/compiler.xml
+resilience4j/.idea/jarRepositories.xml
+resilience4j/.idea/modules.xml
+resilience4j/.idea/*.iml
+resilience4j/.idea/modules
+resilience4j/.idea/gradle.xml
+resilience4j/.idea/**/uiDesigner.xml
