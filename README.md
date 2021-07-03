@@ -1,2 +1,1 @@
-# spring-cloud-bulkhead-samples
-My code when learn about bulkhead pattern implementation with Spring
+Read more about [bulkhead pattern](https://github.com/bluething/reactivearchitecture/tree/master/bulkhead)
