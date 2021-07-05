@@ -198,6 +198,39 @@ public class SemaphoreBulkHead {
 
         MeterRegistry meterRegistry = new SimpleMeterRegistry();
         TaggedBulkheadMetrics.ofBulkheadRegistry(bulkheadRegistry).bindTo(meterRegistry);
+
+        bulkhead.getEventPublisher()
+                .onCallPermitted(event -> printMetricDetails(meterRegistry));
+        bulkhead.getEventPublisher()
+                .onCallRejected(event -> printMetricDetails(meterRegistry));
+        bulkhead.getEventPublisher()
+                .onCallFinished(event -> printMetricDetails(meterRegistry));
+
+        Random random = new Random();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss SSS");
+        Service flightSearchService = new Service(random, dateTimeFormatter);
+
+        SearchRequest searchRequest = new SearchRequest("NYC", "LAX", "07/05/2021");
+
+        Supplier<List<Flight>> flightSupplier = () -> {
+            List<Flight> flights = new ArrayList<>();
+            try {
+                flights =  flightSearchService.searchFlightsTakingOneSecond(searchRequest);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return flights;
+        };
+        Supplier<List<Flight>> decoratedFlightSupplier = Bulkhead.decorateSupplier(bulkhead, flightSupplier);
+
+        for (int i = 0; i < 5; i++) {
+            CompletableFuture.supplyAsync(decoratedFlightSupplier)
+                    .whenComplete((r , t) -> {
+                        if (r != null) {
+                            System.out.println("Received results");
+                        }
+                    });
+        }
     }
     void printMetricDetails(MeterRegistry meterRegistry) {
         Consumer<Meter> meterConsumer = meter -> {
@@ -227,6 +260,9 @@ public class SemaphoreBulkHead {
         System.out.println(" ====== ");
         semaphoreBulkHead.semaphoteEvent();
         delay(5);
+        System.out.println(" ====== ");
+        semaphoreBulkHead.semaphoreMetrics();
+        delay(15);
     }
     static void delay(int second) throws InterruptedException {
         Thread.sleep(second * 1000);
