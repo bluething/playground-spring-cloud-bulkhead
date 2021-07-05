@@ -94,6 +94,47 @@ public class SemaphoreBulkHead {
                     });
         }
     }
+    void semaphoreWithExceptionTurnOffTheStackTrace() {
+        BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
+                .maxConcurrentCalls(2)
+                .maxWaitDuration(Duration.ofSeconds(1))
+                .writableStackTraceEnabled(false)
+                .build();
+        BulkheadRegistry bulkheadRegistry = BulkheadRegistry.of(bulkheadConfig);
+        Bulkhead bulkhead = bulkheadRegistry.bulkhead("flightSearchService");
+
+        Random random = new Random();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss SSS");
+        Service flightSearchService = new Service(random, dateTimeFormatter);
+
+        SearchRequest searchRequest = new SearchRequest("NYC", "LAX", "07/05/2021");
+
+        Supplier<List<Flight>> flightSupplier = () -> {
+            List<Flight> flights = new ArrayList<>();
+            try {
+                flights =  flightSearchService.searchFlightsTakingOneSecond(searchRequest);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return flights;
+        };
+        Supplier<List<Flight>> decoratedFlightSupplier = Bulkhead.decorateSupplier(bulkhead, flightSupplier);
+
+        for (int i = 0; i < 4; i++) {
+            CompletableFuture.supplyAsync(decoratedFlightSupplier)
+                    .whenComplete((r, t) -> {
+                        if (t != null) {
+                            Throwable cause = t.getCause();
+                            if (cause != null) {
+                                cause.printStackTrace();
+                            }
+                        }
+                        if (r != null) {
+                            System.out.println("Received results");
+                        }
+                    });
+        }
+    }
     public static void main(String[] args) throws InterruptedException {
         SemaphoreBulkHead semaphoreBulkHead = new SemaphoreBulkHead();
         semaphoreBulkHead.printDefaultValues();
@@ -102,6 +143,9 @@ public class SemaphoreBulkHead {
         delay(3);
         System.out.println(" ======");
         semaphoreBulkHead.semaphoreWithException();
+        delay(3);
+        System.out.println(" ====== ");
+        semaphoreBulkHead.semaphoreWithExceptionTurnOffTheStackTrace();
         delay(3);
     }
     static void delay(int second) throws InterruptedException {
