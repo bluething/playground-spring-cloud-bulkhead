@@ -6,6 +6,10 @@ import io.github.bluething.spring.cloud.bulkhead.resilience4j.flight.Service;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
+import io.github.resilience4j.micrometer.tagged.TaggedBulkheadMetrics;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.StreamSupport;
 
 public class SemaphoreBulkHead {
     void printDefaultValues() {
@@ -181,6 +187,30 @@ public class SemaphoreBulkHead {
                         }
                     });
         }
+    }
+    void semaphoreMetrics() {
+        BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
+                .maxConcurrentCalls(8)
+                .maxWaitDuration(Duration.ofMillis(500))
+                .build();
+        BulkheadRegistry bulkheadRegistry = BulkheadRegistry.of(bulkheadConfig);
+        Bulkhead bulkhead = bulkheadRegistry.bulkhead("flightSearchService");
+
+        MeterRegistry meterRegistry = new SimpleMeterRegistry();
+        TaggedBulkheadMetrics.ofBulkheadRegistry(bulkheadRegistry).bindTo(meterRegistry);
+    }
+    void printMetricDetails(MeterRegistry meterRegistry) {
+        Consumer<Meter> meterConsumer = meter -> {
+          String desc = meter.getId().getDescription();
+          String metricName = meter.getId().getName();
+          Double metricValue = StreamSupport.stream(meter.measure().spliterator(), false)
+                  .filter(m -> m.getStatistic().name().equals("VALUE"))
+                  .findFirst()
+                  .map(m -> m.getValue())
+                  .orElse(0.0);
+            System.out.println(desc + " - " + metricName + ": " + metricValue);
+        };
+        meterRegistry.forEachMeter(meterConsumer);
     }
     public static void main(String[] args) throws InterruptedException {
         SemaphoreBulkHead semaphoreBulkHead = new SemaphoreBulkHead();
