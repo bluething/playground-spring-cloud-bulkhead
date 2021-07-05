@@ -2,6 +2,13 @@ Resilience4j provides two implementations of a bulkhead pattern that can be used
 - A SemaphoreBulkhead which uses Semaphores.  
 - A FixedThreadPoolBulkhead which uses a bounded queue, and a fixed thread pool.
 
+The BulkHead emits a stream of BulkHeadEvents. There are two types of events emitted: permitted execution, rejected execution & finished execution.  
+```text
+2021-07-05T11:08:35.582658+07:00[Asia/Jakarta]: Bulkhead 'flightSearchService' permitted a call.
+2021-07-05T11:08:36.083074+07:00[Asia/Jakarta]: Bulkhead 'flightSearchService' rejected a call.
+2021-07-05T11:08:36.585053+07:00[Asia/Jakarta]: Bulkhead 'flightSearchService' has finished a call.
+```
+
 Config property | Default Value | Description
 --- | --- | ---
 maxConcurrentCalls | 25 | Max amount of parallel executions allowed by the bulkhead
