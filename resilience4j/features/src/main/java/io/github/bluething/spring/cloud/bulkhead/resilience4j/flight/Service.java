@@ -1,6 +1,5 @@
 package io.github.bluething.spring.cloud.bulkhead.resilience4j.flight;
 
-import javax.swing.plaf.TableHeaderUI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
