@@ -12,7 +12,7 @@ The BulkHead emits a stream of BulkHeadEvents. There are two types of events emi
 Config property | Default Value | Description
 --- | --- | ---
 maxConcurrentCalls | 25 | Max amount of parallel executions allowed by the bulkhead
-maxWaitDuration | | Max amount of time a thread should be blocked for when attempting to enter a saturated bulkhead.
+maxWaitDuration | 0s | Max amount of time a thread should be blocked for when attempting to enter a saturated bulkhead.
 
 #### SemaphoreBulkhead
 
@@ -54,5 +54,25 @@ io.github.resilience4j.bulkhead.BulkheadFullException: Bulkhead 'flightSearchSer
 ```  
 With `maxConcurrentCalls` set to 2 and maxWaitDuration set to 1s we will get this exception for the 3rd thread.  
 Turn off the stack trace with `writableStackTraceEnabled` set to false.
+
+For `SemaphoreBulkhead` there are two metrics exposed
+
+Metric name | Description
+--- | ---
+resilience4j.bulkhead.max.allowed.concurrent.calls | the maximum number of available permissions
+resilience4j.bulkhead.available.concurrent.calls | the number of allowed concurrent calls
+
+```text
+The maximum number of available permissions - resilience4j.bulkhead.max.allowed.concurrent.calls: 8.0
+The maximum number of available permissions - resilience4j.bulkhead.max.allowed.concurrent.calls: 8.0
+The maximum number of available permissions - resilience4j.bulkhead.max.allowed.concurrent.calls: 8.0
+The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
+The maximum number of available permissions - resilience4j.bulkhead.max.allowed.concurrent.calls: 8.0
+The maximum number of available permissions - resilience4j.bulkhead.max.allowed.concurrent.calls: 8.0
+The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
+The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
+The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
+The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
+```
 
 #### FixedThreadPoolBulkhead
