@@ -45,6 +45,7 @@ io.github.resilience4j.bulkhead.BulkheadFullException: Bulkhead 'flightSearchSer
 	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1598)
 	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
 ```  
-With `maxConcurrentCalls` set to 2 and maxWaitDuration set to 1s we will get this exception for the 3rd thread.
+With `maxConcurrentCalls` set to 2 and maxWaitDuration set to 1s we will get this exception for the 3rd thread.  
+Turn off the stack trace with `writableStackTraceEnabled` set to false.
 
 #### FixedThreadPoolBulkhead
