@@ -30,6 +30,21 @@ Flight search successful at 10:38:13 922
 Received results
 Received results
 ```  
-With `maxConcurrentCalls` set to 2 the third, and the fourth requests were able to acquire permits only 1s later, after the previous requests completed.
+With `maxConcurrentCalls` set to 2 and maxWaitDuration set to 2s the third, and the fourth requests were able to acquire permits only 1s later, after the previous requests completed.
+
+```text
+io.github.resilience4j.bulkhead.BulkheadFullException: Bulkhead 'flightSearchService' is full and does not permit further calls
+	at io.github.resilience4j.bulkhead.BulkheadFullException.createBulkheadFullException(BulkheadFullException.java:49)
+	at io.github.resilience4j.bulkhead.internal.SemaphoreBulkhead.acquirePermission(SemaphoreBulkhead.java:164)
+	at io.github.resilience4j.bulkhead.Bulkhead.lambda$decorateSupplier$5(Bulkhead.java:194)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1764)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:1756)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1016)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1665)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1598)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:177)
+```  
+With `maxConcurrentCalls` set to 2 and maxWaitDuration set to 1s we will get this exception for the 3rd thread.
 
 #### FixedThreadPoolBulkhead
