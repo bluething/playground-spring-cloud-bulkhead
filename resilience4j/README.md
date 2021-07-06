@@ -76,3 +76,14 @@ The number of available permissions - resilience4j.bulkhead.available.concurrent
 ```
 
 #### FixedThreadPoolBulkhead
+
+Config property | Default Value | Description
+--- | --- | ---
+maxThreadPoolSize | Runtime.getRuntime().availableProcessors() | Configures the max thread pool size
+coreThreadPoolSize | Runtime.getRuntime().availableProcessors() - 1 | Configures the core thread pool size
+keepAliveDuration | 200ms | When the number of threads is greater than the core, this is the maximum time that excess idle threads will wait for new tasks before terminating.
+queueCapacity | 100 | Configures the capacity of the queue.
+
+ThreadPoolBulkhead internally uses these configurations to construct a [ThreadPoolExecutor](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html).
+
+The internalThreadPoolExecutor executes incoming tasks using one of the available, free threads. If no thread is free to execute an incoming task, the task is enqueued for executing later when a thread becomes available. If the `queueCapacity` has been reached, then the remote call is rejected with a `BulkheadFullException`.
