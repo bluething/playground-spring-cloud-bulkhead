@@ -75,7 +75,7 @@ The number of available permissions - resilience4j.bulkhead.available.concurrent
 The number of available permissions - resilience4j.bulkhead.available.concurrent.calls: 3.0
 ```
 
-#### FixedThreadPoolBulkhead
+#### ThreadPoolBulkhead
 
 Config property | Default Value | Description
 --- | --- | ---
@@ -99,3 +99,21 @@ Exception in thread "main" io.github.resilience4j.bulkhead.BulkheadFullException
 	at io.github.bluething.spring.cloud.bulkhead.resilience4j.ThreadPoolBulkheadSample.main(ThreadPoolBulkheadSample.java:152)
 ```  
 To reduce the amount of information that is generated in the stack trace set `writableStackTraceEnabled` to false.
+
+ThreadPoolBulkhead exposes five metrics
+
+Metric name | Description
+--- | ---
+resilience4j.bulkhead.queue.depth | The current length of the queue
+resilience4j.bulkhead.thread.pool.size | The current size of the thread pool
+resilience4j.bulkhead.core.thread.pool.size | The core sizes of the thread pool
+resilience4j.bulkhead.max.thread.pool.size | The maximum sizes of the thread pool
+resilience4j.bulkhead.queue.capacity | The capacity of the queue
+
+```text
+The queue depth - resilience4j.bulkhead.queue.depth: 0.0
+The thread pool size - resilience4j.bulkhead.thread.pool.size: 3.0
+The maximum thread pool size - resilience4j.bulkhead.max.thread.pool.size: 5.0
+The core thread pool size - resilience4j.bulkhead.core.thread.pool.size: 3.0
+The queue capacity - resilience4j.bulkhead.queue.capacity: 5.0
+```
