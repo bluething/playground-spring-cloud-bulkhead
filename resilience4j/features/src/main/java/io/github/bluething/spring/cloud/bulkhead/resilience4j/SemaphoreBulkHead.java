@@ -165,7 +165,7 @@ public class SemaphoreBulkHead {
         Supplier<List<Flight>> flightSupplier = () -> {
             List<Flight> flights = new ArrayList<>();
             try {
-                flights =  flightSearchService.searchFlightsTakingOneSecond(searchRequest);
+                flights =  flightSearchService.searchFlightsTakingRandomTime(searchRequest);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -215,7 +215,7 @@ public class SemaphoreBulkHead {
         Supplier<List<Flight>> flightSupplier = () -> {
             List<Flight> flights = new ArrayList<>();
             try {
-                flights =  flightSearchService.searchFlightsTakingOneSecond(searchRequest);
+                flights =  flightSearchService.searchFlightsTakingRandomTime(searchRequest);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
