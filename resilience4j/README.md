@@ -97,4 +97,5 @@ Exception in thread "main" io.github.resilience4j.bulkhead.BulkheadFullException
 	at io.github.resilience4j.bulkhead.ThreadPoolBulkhead.lambda$decorateSupplier$1(ThreadPoolBulkhead.java:69)
 	at io.github.bluething.spring.cloud.bulkhead.resilience4j.ThreadPoolBulkheadSample.threadPoolWithException(ThreadPoolBulkheadSample.java:93)
 	at io.github.bluething.spring.cloud.bulkhead.resilience4j.ThreadPoolBulkheadSample.main(ThreadPoolBulkheadSample.java:152)
-```
+```  
+To reduce the amount of information that is generated in the stack trace set `writableStackTraceEnabled` to false.
