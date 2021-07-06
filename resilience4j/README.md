@@ -87,3 +87,14 @@ queueCapacity | 100 | Configures the capacity of the queue.
 ThreadPoolBulkhead internally uses these configurations to construct a [ThreadPoolExecutor](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html).
 
 The internalThreadPoolExecutor executes incoming tasks using one of the available, free threads. If no thread is free to execute an incoming task, the task is enqueued for executing later when a thread becomes available. If the `queueCapacity` has been reached, then the remote call is rejected with a `BulkheadFullException`.
+
+If there are no free threads and no capacity in the queue, a BulkheadFullException is thrown:  
+```text
+Exception in thread "main" io.github.resilience4j.bulkhead.BulkheadFullException: Bulkhead 'flightSearchService' is full and does not permit further calls
+	at io.github.resilience4j.bulkhead.BulkheadFullException.createBulkheadFullException(BulkheadFullException.java:64)
+	at io.github.resilience4j.bulkhead.internal.FixedThreadPoolBulkhead.submit(FixedThreadPoolBulkhead.java:158)
+	at io.github.resilience4j.bulkhead.internal.FixedThreadPoolBulkhead.submit(FixedThreadPoolBulkhead.java:47)
+	at io.github.resilience4j.bulkhead.ThreadPoolBulkhead.lambda$decorateSupplier$1(ThreadPoolBulkhead.java:69)
+	at io.github.bluething.spring.cloud.bulkhead.resilience4j.ThreadPoolBulkheadSample.threadPoolWithException(ThreadPoolBulkheadSample.java:93)
+	at io.github.bluething.spring.cloud.bulkhead.resilience4j.ThreadPoolBulkheadSample.main(ThreadPoolBulkheadSample.java:152)
+```
